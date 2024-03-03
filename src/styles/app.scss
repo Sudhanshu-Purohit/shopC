@@ -46,6 +46,7 @@ $color3: rgb(0, 104, 136);
 
 @import "admin-styles/mixin";
 @import "home";
+@import "cart";
 @import "admin-styles/dashboard";
 @import "admin-styles/products";
 @import "admin-styles/chart";
@@ -89,10 +90,6 @@ $color3: rgb(0, 104, 136);
     }
   }
 }
-
-
-
-
 
 .admin-container {
   @include grid(1fr 4fr, 2rem);
