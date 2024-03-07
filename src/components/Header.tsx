@@ -9,9 +9,11 @@ const user = {
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+
     const handleSignout = () => {
         setIsOpen(false);
     }
+
     return (
         <nav className="header">
             <Link onClick={() => setIsOpen(false)} to='/'> Home </Link>
@@ -21,7 +23,7 @@ const Header = () => {
             {user._id ? (
                 <>
                     <button onClick={() => setIsOpen((prev) => !prev)}> <FaUser /> </button>
-                    <dialog open={isOpen} >
+                    <dialog open={isOpen}>
                         <div>
                             {user.role === 'admin' && (
                                 <Link onClick={() => setIsOpen(false)} to='/admin/dashboard'> Admin </Link>

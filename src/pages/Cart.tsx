@@ -78,7 +78,7 @@ const Cart = () => {
         )}
 
         {cartItems.length > 0 && (
-          <Link to='/checkout'> Checkout </Link>
+          <Link to='/shipping'> Checkout </Link>
         )}
       </aside>
     </div>
