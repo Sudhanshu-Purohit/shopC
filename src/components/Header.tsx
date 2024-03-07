@@ -3,7 +3,7 @@ import { FaSearch, FaShoppingBag, FaSignInAlt, FaSignOutAlt, FaUser } from "reac
 import { Link } from "react-router-dom"
 
 const user = {
-    _id: "45453453",
+    _id: "",
     role: "admin"
 }
 
