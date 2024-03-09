@@ -1,7 +1,7 @@
 import express from 'express';
 import { connectDB } from './config/db.js';
 import { errorMiddleware } from './middlewares/error.js';
-
+import NodeCache from 'node-cache';
 
 // importing routes
 import userRoute from './routes/user.js';
@@ -9,6 +9,11 @@ import productRoute from './routes/product.js';
 
 // database connection
 connectDB();
+
+// for using chacheing
+export const myCache = new NodeCache({
+    stdTTL: 1800  // after this time the cache will be removed from memory
+});
 
 const PORT = 4000;
 
