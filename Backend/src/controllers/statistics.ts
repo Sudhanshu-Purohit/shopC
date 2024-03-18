@@ -3,7 +3,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.js";
 import { Product } from "../models/product.js";
 import { User } from "../models/user.js";
-import { calculatePercentage } from "../utils/features.js";
+import { calculatePercentage, getCategories } from "../utils/features.js";
 
 export const getDashboardStats = TryCatch(async (req, res, next) => {
     let stats = {};
@@ -145,21 +145,7 @@ export const getDashboardStats = TryCatch(async (req, res, next) => {
             }
         })
 
-        const categoriesCountPromise = allCategories.map((category) => {
-            return Product.countDocuments({category})
-        })
-
-        const categoriesCount = await Promise.all(categoriesCountPromise);
-
-        const categoryCount: Record<string, number>[] = [];
-
-        if(allCategories.length > 0) {
-            allCategories.forEach((category, i) => {
-                categoryCount.push({
-                    [category]: Math.round((categoriesCount[i] / productsCount) * 100)
-                })
-            })
-        }
+        const categoryCount: Record<string, number>[] = await getCategories(allCategories, productsCount);
 
         const userRatio = {
             male: usersCount - femaleUserCount,
@@ -201,14 +187,32 @@ export const getDashboardStats = TryCatch(async (req, res, next) => {
 
 export const getPieChartStats = TryCatch(async (req, res, next) => {
     let charts = {};
+    let currentYear = new Date().getFullYear();
 
     if(myCache.has('pieChart-stats')) {
         charts = JSON.parse(myCache.get('pieChart-stats') as string)
     } else {
-        const [processingOrdersCount, shippedOrdersCount, deliveredOrdersCount] = await Promise.all([
+        const [processingOrdersCount, 
+            shippedOrdersCount, 
+            deliveredOrdersCount, 
+            allCategories, 
+            productsCount,
+            productsOutOfStock,
+            allOrders,
+            allUsers, 
+            adminUsers,
+            customerUsers
+        ] = await Promise.all([
             Order.countDocuments({status: "Processing"}),
             Order.countDocuments({status: "Shipped"}),
             Order.countDocuments({status: "Delivered"}),
+            Product.distinct("category"), // it will give all distinct categories
+            Product.countDocuments(),  // count document is used to find total products
+            Product.countDocuments({ stock: 0 }),
+            Order.find({}).select(["total", "discount", "subTotal", "tax", "shippingCharges"]),
+            User.find({}).select("dob"),
+            User.countDocuments({role: "admin"}),
+            User.countDocuments({role: "user"}),
         ]);
 
         const orderFullfilment = {
@@ -217,8 +221,59 @@ export const getPieChartStats = TryCatch(async (req, res, next) => {
             deliveredOrdersCount
         }
 
+        const categoryCount: Record<string, number>[] = await getCategories(allCategories, productsCount);
+
+        const stockAvailablity = {
+            inStock: productsCount - productsOutOfStock,
+            outOfStock: productsOutOfStock
+        }
+
+        const grossIncome = allOrders.reduce((total, order) => {
+            return total + (order.total || 0)
+        }, 0);
+
+        const grossDiscount = allOrders.reduce((total, order) => {
+            return total + (order.discount || 0)
+        }, 0);
+
+        const productionCost = allOrders.reduce((total, order) => {
+            return total + (order.shippingCharges || 0)
+        }, 0)
+
+        const burnt = allOrders.reduce((total, order) => {
+            return total + (order.tax || 0)
+        }, 0)
+
+        const marketingCost = Math.round(grossIncome *(30/100));
+
+        const netMargin = grossIncome - grossDiscount - productionCost - burnt - marketingCost;
+
+        const revenueDistribution = {
+            netMargin,
+            marketingCost,
+            burnt,
+            productionCost,
+            grossDiscount
+        }
+
+        const users = {
+            admin: adminUsers,
+            customers: customerUsers
+        }
+
+        const userAgeGroup = {
+            teen: allUsers.filter((user) => user.age < 20).length,
+            adult: allUsers.filter((user) => user.age > 19 && user.age < 40).length,
+            old: allUsers.filter((user) => user.age >= 40).length,
+        }
+
         charts = {
-            orderFullfilment
+            orderFullfilment,
+            categoryCount,
+            stockAvailablity,
+            revenueDistribution,
+            users,
+            userAgeGroup
         }
 
         myCache.set('pieChart-stats', JSON.stringify(charts));
