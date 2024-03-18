@@ -1,7 +1,7 @@
 import { myCache } from "../app.js";
-import { Order } from "../models/order.js";
 import { Product } from "../models/product.js";
 import { OrderItemType, RevalidateCacheProps } from "../types/types.js";
+import { Document } from 'mongoose'
 
 export const revalidateCache = async ({
     admin,
@@ -51,7 +51,7 @@ export const calculatePercentage = (thisMonth: number, lastMonth: number) => {
         return thisMonth*100;
     }
 
-    const percentage = ((thisMonth - lastMonth) / lastMonth) * 100;
+    const percentage = (thisMonth / lastMonth) * 100;
     return Number(percentage.toFixed(0));
 }
 
@@ -75,4 +75,30 @@ export const getCategories = async (allCategories: string[], productsCount: numb
     }
 
     return categoryCount;
+}
+
+
+interface MyDocument extends Document {
+    createdAt: Date
+}
+
+type countProps = {
+    docArr: MyDocument[],
+    length: number,
+    today: Date
+}
+
+export const count = ({ docArr, length, today }: countProps) => {
+    const data = new Array(length).fill(0);
+
+    docArr.forEach((ele, i) => {
+        const creationDate = ele.createdAt;
+        const monthDiff = today.getMonth() - creationDate.getMonth();
+
+        if (monthDiff < length) {
+            data[length - 1 - monthDiff] += 1;
+        }
+    })
+
+    return data;
 }

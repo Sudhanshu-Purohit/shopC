@@ -3,7 +3,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.js";
 import { Product } from "../models/product.js";
 import { User } from "../models/user.js";
-import { calculatePercentage, getCategories } from "../utils/features.js";
+import { calculatePercentage, count, getCategories } from "../utils/features.js";
 
 export const getDashboardStats = TryCatch(async (req, res, next) => {
     let stats = {};
@@ -288,7 +288,62 @@ export const getPieChartStats = TryCatch(async (req, res, next) => {
 
 
 export const getBarChartStats = TryCatch(async (req, res, next) => {
-    
+    let charts;
+
+    if(myCache.has('barChart-stats')) {
+        charts = JSON.parse(myCache.get('barChart-stats') as string)
+    } else {
+        const today = new Date();
+        const sixMonthAgo = new Date();
+        sixMonthAgo.setMonth(sixMonthAgo.getMonth() - 6);
+
+        const twelveMonthAgo = new Date();
+        twelveMonthAgo.setMonth(twelveMonthAgo.getMonth() - 12);
+
+        const lastSixMonthProductsPromise = Product.find({
+            createdAt: {
+                $gte: sixMonthAgo,
+                $lte: today
+            }
+        }).select("createdAt")
+
+        const lastSixMonthUsersPromise = User.find({
+            createdAt: {
+                $gte: sixMonthAgo,
+                $lte: today
+            }
+        }).select("createdAt")
+
+        const lastTwelveMonthOrdersPromise = Order.find({
+            createdAt: {
+                $gte: twelveMonthAgo,
+                $lte: today
+            }
+        }).select("createdAt")
+
+        const [ lastSixMonthProducts, lastSixMonthUsers, lastTwelveMonthOrders ] = await Promise.all([
+            lastSixMonthProductsPromise,
+            lastSixMonthUsersPromise,
+            lastTwelveMonthOrdersPromise
+        ])
+
+        const lastSixMonthProductsCount = count({docArr: lastSixMonthProducts, length: 6, today: today})
+        const lastSixMonthUsersCount = count({docArr: lastSixMonthUsers, length: 6, today: today})
+        const lastTwelveMonthOrdersCount = count({docArr: lastTwelveMonthOrders, length: 12, today: today})
+
+        charts = {
+            lastSixMonthProductsCount,
+            lastSixMonthUsersCount,
+            lastTwelveMonthOrdersCount
+        }
+
+        myCache.set('barChart-stats', JSON.stringify(charts));
+    }
+
+    return res.status(200).json({
+        success: true,
+        charts
+    });
 })
 
 
