@@ -44,3 +44,32 @@ export const reduceStock = async (orderItems: OrderItemType[]) => {
         await product.save();
     });
 }
+
+
+export const calculatePercentage = (thisMonth: number, lastMonth: number) => {
+    if(lastMonth === 0) {
+        return thisMonth*100;
+    }
+
+    const percentage = ((thisMonth - lastMonth) / lastMonth) * 100;
+    return Number(percentage.toFixed(0));
+}
+
+
+// export const getCategories = () => {
+//     const categoriesCountPromise = allCategories.map((category) => {
+//         return Product.countDocuments({ category })
+//     })
+
+//     const categoriesCount = await Promise.all(categoriesCountPromise);
+
+//     const categoryCount: Record<string, number>[] = [];
+
+//     if (allCategories.length > 0) {
+//         allCategories.forEach((category, i) => {
+//             categoryCount.push({
+//                 [category]: Math.round((categoriesCount[i] / productsCount) * 100)
+//             })
+//         })
+//     }
+// }

@@ -9,6 +9,8 @@ config({ path: './.env' });
 import userRoute from './routes/user.js';
 import productRoute from './routes/product.js';
 import orderRoute from './routes/order.js';
+import paymentRoute from './routes/payment.js';
+import dashboardRoute from './routes/statistics.js';
 import morgan from 'morgan';
 
 // database connection
@@ -30,6 +32,8 @@ app.use(morgan("dev"));
 app.use('/api/v1/user', userRoute)
 app.use('/api/v1/product', productRoute)
 app.use('/api/v1/order', orderRoute)
+app.use('/api/v1/payment', paymentRoute)
+app.use('/api/v1/dashboard', dashboardRoute)
 
 // making the uploads folder static so that we can access the images in frontnd from url
 app.use('/uploads', express.static("uploads"));
