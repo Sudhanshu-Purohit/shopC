@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { FaSearch, FaShoppingBag, FaSignInAlt, FaSignOutAlt, FaUser } from "react-icons/fa"
 import { Link } from "react-router-dom"
+import { User } from "../types/api-types"
 
-const user = {
-    _id: "",
-    role: "user"
+
+interface userProps {
+    user: User | null;
 }
 
-const Header = () => {
+const Header = ({user}: userProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const handleSignout = () => {
@@ -20,7 +21,7 @@ const Header = () => {
             <Link onClick={() => setIsOpen(false)} to='/search'> <FaSearch /> </Link>
             <Link onClick={() => setIsOpen(false)} to='/cart'> <FaShoppingBag /> </Link>
 
-            {user._id ? (
+            {user?._id ? (
                 <>
                     <button onClick={() => setIsOpen((prev) => !prev)}> <FaUser /> </button>
                     <dialog open={isOpen}>
