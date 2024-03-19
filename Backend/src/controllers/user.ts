@@ -10,7 +10,7 @@ export const newUser = TryCatch(
         res: Response,
         next: NextFunction
     ) => {
-        const { name, email, photo, gender, _id, dob, role } = req.body;
+        const { name, email, photo, gender, _id, dob } = req.body;
 
         if(!name || !email || !photo || !gender || !_id || !dob) {
             return next(new ErrorHandler("Please add all the fields", 400));
@@ -26,7 +26,7 @@ export const newUser = TryCatch(
             })
         }
 
-        user = await User.create({ name, email, photo, gender, _id, dob: new Date(dob), role });
+        user = await User.create({ name, email, photo, gender, _id, dob: new Date(dob) });
 
         return res.status(201).json({
             success: true,

@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Loader from './components/Loader'
 import Header from './components/Header'
+import { Toaster } from 'react-hot-toast'
 
 const Home = lazy(() => import('./pages/Home'))
 const Search = lazy(() => import('./pages/Search'))
@@ -37,7 +38,7 @@ const App = () => {
           <Route path='/search' element={<Search />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/login' element={<Login />} />
-          
+
           {/* logged in user routes */}
           <Route>
             <Route path='/shipping' element={<Shipping />} />
@@ -67,6 +68,10 @@ const App = () => {
 
         </Routes>
       </Suspense>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
     </BrowserRouter>
   )
 }

@@ -8,7 +8,6 @@ export interface NewUserRequestBody {
     gender: string;
     _id: string;
     dob: Date;
-    role: string;
 }
 
 export interface NewProductRequestBody {

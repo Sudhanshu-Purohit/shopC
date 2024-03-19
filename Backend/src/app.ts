@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { connectDB } from './config/db.js';
 import { errorMiddleware } from './middlewares/error.js';
 import NodeCache from 'node-cache';
+import cors from 'cors';
 import { config } from 'dotenv';
 config({ path: './.env' });
 
@@ -33,6 +34,8 @@ const app = express();
 app.use(express.json());
 // morgan is used for logging http requests
 app.use(morgan("dev"));
+// cors is used for cross origin access
+app.use(cors());
 
 app.use('/api/v1/user', userRoute)
 app.use('/api/v1/product', productRoute)
