@@ -349,5 +349,49 @@ export const getBarChartStats = TryCatch(async (req, res, next) => {
 
 
 export const getLineChartStats = TryCatch(async (req, res, next) => {
-    
+    let charts;
+
+    if(myCache.has('lineChart-stats')) {
+        charts = JSON.parse(myCache.get('lineChart-stats') as string)
+    } else {
+        const today = new Date();
+
+        const twelveMonthAgo = new Date();
+        twelveMonthAgo.setMonth(twelveMonthAgo.getMonth() - 12);
+
+        const baseQuery = {
+            createdAt: {
+                $gte: twelveMonthAgo,
+                $lte: today
+            }
+        }
+
+        const [ lastTwelveMonthProducts, lastTwelveMonthUsers, lastTwelveMonthOrders ] = await Promise.all([
+            Product.find(baseQuery).select("createdAt"),
+            User.find(baseQuery).select("createdAt"),
+            Order.find(baseQuery).select(["createdAt", "discount", "total"])
+        ])
+
+        const lastTwelveMonthProductsCount = count({docArr: lastTwelveMonthProducts, length: 12, today: today})
+
+        const lastTwelveMonthUsersCount = count({docArr: lastTwelveMonthUsers, length: 12, today: today})
+
+        const lastTwelveMonthDiscount = count({docArr: lastTwelveMonthOrders, length: 12, today: today, property: "discount"})
+
+        const lastTwelveMonthRevenue = count({docArr: lastTwelveMonthOrders, length: 12, today: today, property: "total"})
+
+        charts = {
+            lastTwelveMonthProductsCount,
+            lastTwelveMonthUsersCount,
+            lastTwelveMonthDiscount,
+            lastTwelveMonthRevenue
+        }
+
+        myCache.set('lineChart-stats', JSON.stringify(charts));
+    }
+
+    return res.status(200).json({
+        success: true,
+        charts
+    });
 })

@@ -29,7 +29,9 @@ export const revalidateCache = async ({
     }
 
     if(admin) {
+        const adminKeys = ["admin-stats", "pieChart-stats", "barChart-stats", "lineChart-stats"];
 
+        myCache.del(adminKeys);
     }
 }
 
@@ -79,16 +81,19 @@ export const getCategories = async (allCategories: string[], productsCount: numb
 
 
 interface MyDocument extends Document {
-    createdAt: Date
+    createdAt: Date,
+    discount?: number,
+    total?: number
 }
 
 type countProps = {
     docArr: MyDocument[],
     length: number,
-    today: Date
+    today: Date,
+    property?: "discount" | "total"
 }
 
-export const count = ({ docArr, length, today }: countProps) => {
+export const count = ({ docArr, length, today, property }: countProps) => {
     const data = new Array(length).fill(0);
 
     docArr.forEach((ele, i) => {
@@ -96,7 +101,7 @@ export const count = ({ docArr, length, today }: countProps) => {
         const monthDiff = today.getMonth() - creationDate.getMonth();
 
         if (monthDiff < length) {
-            data[length - 1 - monthDiff] += 1;
+            data[length - 1 - monthDiff] += property ? ele[property] : 1;
         }
     })
 
