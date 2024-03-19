@@ -1,4 +1,6 @@
 import express from 'express';
+import morgan from 'morgan';
+import Stripe from 'stripe';
 import { connectDB } from './config/db.js';
 import { errorMiddleware } from './middlewares/error.js';
 import NodeCache from 'node-cache';
@@ -11,11 +13,14 @@ import productRoute from './routes/product.js';
 import orderRoute from './routes/order.js';
 import paymentRoute from './routes/payment.js';
 import dashboardRoute from './routes/statistics.js';
-import morgan from 'morgan';
 
 // database connection
 const mongodb_uri = process.env.MONGODB_URI || "mongodb+srv://sudhanshu:ALX1yW3XfAnU1hO6@shopc-cluster.hz3mmiw.mongodb.net/?retryWrites=true&w=majority&appName=ShopC-Cluster"
 connectDB(mongodb_uri);
+
+// stripe payment
+const stripeKey = process.env.STRIPE_KEY || "";
+export const stripe = new Stripe(stripeKey);
 
 // for using chacheing
 export const myCache = new NodeCache({

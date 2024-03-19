@@ -7,7 +7,8 @@ export interface NewUserRequestBody {
     photo: string;
     gender: string;
     _id: string;
-    dob: Date
+    dob: Date;
+    role: string;
 }
 
 export interface NewProductRequestBody {

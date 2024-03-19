@@ -23,6 +23,7 @@ export const newOrder = TryCatch(async (
     })
 
     await reduceStock(orderItems);
+    
     await revalidateCache({
         product: true, 
         order: true, 
