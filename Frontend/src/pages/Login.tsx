@@ -6,6 +6,7 @@ import { auth } from "../firebase";
 import { useLoginMutation } from "../redux/api/userAPI";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { MessageResponse } from "../types/api-types";
+import { Navigate } from "react-router-dom";
 
 const Login = () => {
     const [gender, setGender] = useState("");
@@ -14,16 +15,16 @@ const Login = () => {
     const [login] = useLoginMutation();
 
     const signInWithGoogle = async () => {
-        if(!gender || !date) {
+        if(!gender ||!date) {
             toast.error("please select all the fields");
             return;
         }
-
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
+            // storing in mongodb database
             const res = await login({ 
                 _id: user.uid, 
                 name: user.displayName!, 
