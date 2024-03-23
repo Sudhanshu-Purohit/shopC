@@ -48,7 +48,6 @@ const App = () => {
       }
     })
   }, [])
-
   return loading ? <Loader /> : (
     <BrowserRouter>
       <Header user={user} />

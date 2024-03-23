@@ -1,20 +1,40 @@
 import { useState } from "react"
 import ProductCard from "../components/ProductCard";
+import { useCategoriesQuery, useSearchProductsQuery } from "../redux/api/productAPI";
+import toast from "react-hot-toast";
+import { CustomError } from "../types/api-types";
+import { SkeletonLoader } from "../components/Loader";
 
 const Search = () => {
+  const { data, isLoading, isError, error } = useCategoriesQuery("");
+  if (isError) {
+    toast.error((error as CustomError).data.message);
+  }
 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState(100000);
   const [category, setCategory] = useState("");
   const [page, setPage] = useState(1);
+
+  const {data: searchedData, isLoading: productLoading, isError: isProductError, error: productError} = useSearchProductsQuery({
+    search,
+    sort,
+    price: maxPrice,
+    category,
+    page,
+  });
+
+  if (isProductError) {
+    toast.error((productError as CustomError).data.message);
+  }
 
   const addToCartHandler = () => {
 
   }
 
   const isPrevPage = page > 1;
-  const isNextPage = page < 4;
+  const isNextPage = page < searchedData?.totalPages;
 
   return (
     <div className="product-search-page">
@@ -30,13 +50,13 @@ const Search = () => {
         </div>
 
         <div>
-          <h4>Max Price: {maxPrice || ""}</h4>
+          <h4>Max Price: {maxPrice || 100000}</h4>
           <input
             type="range"
             min={100}
             max={100000}
             value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
           />
         </div>
 
@@ -44,9 +64,9 @@ const Search = () => {
           <h4>Category</h4>
           <select value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">All</option>
-            <option value="">sample 1</option>
-            <option value="">sample 2</option>
-            <option value="">sample 3</option>
+            {!isLoading && data?.categories.map((cat, i) => {
+              return <option key={i} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+            })}
           </select>
         </div>
       </aside>
@@ -61,21 +81,26 @@ const Search = () => {
         />
 
         <div className="search-product-list">
-          <ProductCard
-            productId="0427584"
-            price={43423}
-            name="macbook"
-            photo="https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1685966368/Croma%20Assets/Computers%20Peripherals/Laptop/Images/256713_xqa1ds.png"
-            stock={5}
+          { productLoading ? <SkeletonLoader /> : searchedData?.products.map((product, i) => {
+            return <ProductCard
+            key={i}
+            productId={product._id}
+            price={product.price}
+            name={product.name}
+            photo={product.photo}
+            stock={product.stock}
             handler={addToCartHandler}
           />
+          }) }
         </div>
 
-        <article>
-          <button disabled={!isPrevPage} onClick={() => setPage(prev => prev-1)}>Prev</button>
-          <span> {page} of 4 </span>
-          <button disabled={!isNextPage} onClick={() => setPage(prev => prev+1)}>Next</button>
-        </article>
+        {searchedData && searchedData.totalPages > 1 && (
+          <article>
+            <button disabled={!isPrevPage} onClick={() => setPage(prev => prev - 1)}>Prev</button>
+            <span> {page} of {searchedData.totalPages} </span>
+            <button disabled={!isNextPage} onClick={() => setPage(prev => prev + 1)}>Next</button>
+          </article>
+        )}
       </main>
     </div>
   )
