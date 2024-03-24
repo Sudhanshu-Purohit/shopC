@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { FaSearch, FaShoppingBag, FaSignInAlt, FaSignOutAlt, FaUser } from "react-icons/fa"
 import { Link } from "react-router-dom"
-import { User } from "../types/api-types"
 import toast from "react-hot-toast";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
+import { User } from "../types/types";
 
 
 interface userProps {

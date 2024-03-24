@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { MessageResponse, User, UserResponse } from "../../types/api-types";
+import { MessageResponse, UserResponse } from "../../types/api-types";
 import axios from "axios";
+import { User } from "../../types/types";
 
 export const userAPI = createApi({
     reducerPath: "userAPI",
