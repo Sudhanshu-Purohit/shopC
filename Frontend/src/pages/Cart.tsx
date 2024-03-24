@@ -4,9 +4,10 @@ import { VscError } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import CartItemsCard from "../components/CartItems";
-import { addToCart, calculateCartTotals, removeFromCart } from "../redux/reducer/cartReducer";
+import { addToCart, applyDiscount, calculateCartTotals, removeFromCart } from "../redux/reducer/cartReducer";
 import { CartReducerInitialState } from "../types/reducer-types";
 import { CartItems } from "../types/types";
+import axios from "axios";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,32 @@ const Cart = () => {
   useEffect(() => {
     dispatch(calculateCartTotals());
   }, [cartItems])
+
+  useEffect(() => {
+    const { token: cancelToken, cancel } = axios.CancelToken.source();
+
+    const timeOut = setTimeout(async () => {
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/payment/apply/discount?coupoun=${couponCode}`, {
+        cancelToken
+      })
+      .then((res) => {
+        dispatch(applyDiscount(res.data.discount));
+        setIsValidCouponCode(true);
+        dispatch(calculateCartTotals());
+      }).catch(() => {
+        dispatch(applyDiscount(0));
+        setIsValidCouponCode(false);
+        dispatch(calculateCartTotals());
+      })
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeOut);
+      cancel();
+      setIsValidCouponCode(false);
+    }
+  }, [couponCode])
+  
 
   return (
     <div className="cart">
@@ -71,7 +98,7 @@ const Cart = () => {
 
         {couponCode && (
           isValidCouponCode ? (
-            <span className="green">₹4389 off using the <code>{couponCode}</code></span>
+            <span className="green">₹${discount} off using the <code>{couponCode}</code></span>
           ) : (
             <span className="red"> Invalid Coupon <VscError /> </span>
           )
