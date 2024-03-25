@@ -13,11 +13,7 @@ const Productmanagement = () => {
   const navigate = useNavigate();
 
   const { user } = useSelector((state: { userReducer: UserReducerInitialState }) => state.userReducer);
-  const { data, isLoading, isError, error } = useSingleProductDetailsQuery(productId!);
-
-  if (isError) {
-    return <Navigate to='/404' />
-  }
+  const { data, isLoading, isError } = useSingleProductDetailsQuery(productId!);
 
   const { name, price, stock, photo, category } = data?.product || {
     name: "",
@@ -88,6 +84,10 @@ const Productmanagement = () => {
       setCategoryUpdate(data.product.category);
     }
   }, [data]);
+
+  if (isError) {
+    return <Navigate to={'/404'} />;
+  }
 
   return (
     <div className="admin-container">

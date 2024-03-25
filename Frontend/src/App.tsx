@@ -1,15 +1,15 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { lazy, Suspense, useEffect } from 'react'
-import Loader from './components/Loader'
-import Header from './components/Header'
-import { Toaster } from 'react-hot-toast'
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from './firebase'
+import { Suspense, lazy, useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { userExist, userNotExist } from './redux/reducer/userReducer'
-import { getUser } from './redux/api/userAPI'
-import { UserReducerInitialState } from './types/reducer-types'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Header from './components/Header'
+import Loader from './components/Loader'
 import ProtectedRoute from './components/ProtectedRoute'
+import { auth } from './firebase'
+import { getUser } from './redux/api/userAPI'
+import { userExist, userNotExist } from './redux/reducer/userReducer'
+import { UserReducerInitialState } from './types/reducer-types'
 
 const Home = lazy(() => import('./pages/Home'))
 const Search = lazy(() => import('./pages/Search'))
@@ -18,6 +18,7 @@ const Shipping = lazy(() => import('./pages/Shipping'))
 const Login = lazy(() => import('./pages/Login'));
 const Orders = lazy(() => import('./pages/Orders'));
 const OrderDetails = lazy(() => import('./pages/OrderDetails'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // admin import statements
 const Dashboard = lazy(() => import("./pages/admin/dashboard"));
@@ -91,6 +92,8 @@ const App = () => {
             <Route path="/admin/transaction/:id" element={<TransactionManagement />} />
           </Route>
 
+          {/* 404 page */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       <Toaster

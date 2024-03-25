@@ -116,6 +116,17 @@ $color3: rgb(0, 104, 136);
   }
 }
 
+.page-not-found {
+  height: 80vh;
+  @include flex(column);
+  > h1 {
+    font-weight: bold
+  }
+  > svg {
+    font-size: 5rem;
+  }
+}
+
 .admin-container {
   @include grid(1fr 4fr, 2rem);
   height: 100vh;

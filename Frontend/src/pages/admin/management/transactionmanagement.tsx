@@ -27,9 +27,6 @@ const TransactionManagement = () => {
   const navigate = useNavigate();
 
   const { data, isLoading, isError } = useOrderDetailsQuery(orderId!);
-  if (isError) {
-    return <Navigate to='/404' />
-  }
 
   const { shippingInfo: { address, city, state, country, pinCode }, orderItems, user: { name }, status, tax, subTotal, total, discount, shippingCharges } = data?.order || defaultData ;
 
@@ -50,6 +47,10 @@ const TransactionManagement = () => {
       orderId: orderId!
     });
     responseToast(res, navigate, '/admin/dashboard');
+  }
+
+  if (isError) {
+    return <Navigate to='/404' />
   }
 
   return (
