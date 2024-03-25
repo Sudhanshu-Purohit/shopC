@@ -1,13 +1,11 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
-import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { useSelector } from "react-redux";
-import { UserReducerInitialState } from "../../../types/reducer-types";
-import { useDeleteProductMutation, useSingleProductDetailsQuery, useUpdateProductMutation } from "../../../redux/api/productAPI";
-import toast from "react-hot-toast";
-import { CustomError } from "../../../types/api-types";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Loader from "../../../components/Loader";
+import AdminSidebar from "../../../components/admin/AdminSidebar";
+import { useDeleteProductMutation, useSingleProductDetailsQuery, useUpdateProductMutation } from "../../../redux/api/productAPI";
+import { UserReducerInitialState } from "../../../types/reducer-types";
 import { responseToast } from "../../../utils/features";
 
 const Productmanagement = () => {
@@ -18,7 +16,7 @@ const Productmanagement = () => {
   const { data, isLoading, isError, error } = useSingleProductDetailsQuery(productId!);
 
   if (isError) {
-    toast.error((error as CustomError).data.message);
+    return <Navigate to='/404' />
   }
 
   const { name, price, stock, photo, category } = data?.product || {

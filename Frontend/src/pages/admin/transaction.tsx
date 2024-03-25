@@ -8,7 +8,6 @@ import TableHOC from "../../components/admin/TableHOC";
 import { useAllOrdersQuery } from "../../redux/api/orderAPI";
 import { CustomError } from "../../types/api-types";
 import { UserReducerInitialState } from "../../types/reducer-types";
-import Loader from "../../components/Loader";
 
 interface DataType {
   user: string;
@@ -79,7 +78,9 @@ const Transaction = () => {
   return (
     <div className="admin-container">
       <AdminSidebar />
-      <main>{Table}</main>
+      <main>
+        {Table}
+      </main>
     </div>
   );
 };
