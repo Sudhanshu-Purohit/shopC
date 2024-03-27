@@ -112,3 +112,16 @@ export type Pie = {
         old: number
     }
 }
+
+export type Bar = {
+    lastSixMonthProductsCount: number[];
+    lastSixMonthUsersCount: number[];
+    lastTwelveMonthOrdersCount: number[];
+}
+
+export type Line = {
+    lastTwelveMonthProductsCount: number[];
+    lastTwelveMonthUsersCount: number[];
+    lastTwelveMonthDiscount: number[];
+    lastTwelveMonthRevenue: number[];
+}
