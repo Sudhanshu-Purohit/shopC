@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.1",
+    "@stripe/react-stripe-js": "^2.6.2",
+    "@stripe/stripe-js": "^3.0.10",
     "axios": "^1.6.8",
     "chart.js": "^4.4.2",
     "firebase": "^10.8.1",
