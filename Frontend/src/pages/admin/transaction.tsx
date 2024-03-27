@@ -46,24 +46,16 @@ const columns: Column<DataType>[] = [
 ];
 
 const Transaction = () => {
-  const { user } = useSelector((state: {userReducer: UserReducerInitialState}) => state.userReducer);
+  const { user } = useSelector((state: { userReducer: UserReducerInitialState }) => state.userReducer);
   const { data, isLoading, isError, error } = useAllOrdersQuery(user?._id!);
   const [rows, setRows] = useState<DataType[]>([]);
 
-  if(isError) {
+  if (isError) {
     toast.error((error as CustomError).data.message);
   }
 
-  const Table = TableHOC<DataType>(
-    columns,
-    rows,
-    "dashboard-product-box",
-    "Transactions",
-    rows.length > 6
-  )();
-
   useEffect(() => {
-    if(data) {
+    if (data) {
       setRows(data.orders.map((order) => ({
         user: order.user.name,
         amount: order.total,
@@ -74,6 +66,14 @@ const Transaction = () => {
       })));
     }
   }, [data]);
+
+  const Table = TableHOC<DataType>(
+    columns,
+    rows,
+    "dashboard-product-box",
+    "Transactions",
+    rows.length > 6
+  )();
 
   return (
     <div className="admin-container">
