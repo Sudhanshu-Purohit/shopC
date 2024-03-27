@@ -126,6 +126,7 @@ export const getDashboardStats = TryCatch(async (req, res, next) => {
         }, 0)
 
         const count = {
+            revenue: totalRevenue,
             user: usersCount,
             product: productsCount,
             order: allOrders.length
