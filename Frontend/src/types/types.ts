@@ -83,3 +83,32 @@ export type Stats = {
     };
     latestTransactions: LatestTransaction[];
 }
+
+export type Pie = {
+    orderFullfilment: {
+        processingOrdersCount: number;
+        shippedOrdersCount: number;
+        deliveredOrdersCount: number;
+    },
+    categoryCount: Record<string, number>[];
+    stockAvailablity: {
+        inStock: number;
+        outOfStock: number;
+    },
+    revenueDistribution: {
+        netMargin: number;
+        marketingCost: number;
+        burnt: number;
+        productionCost: number;
+        grossDiscount: number;
+    },
+    users: {
+        admin: number,
+        customers: number,
+    },
+    userAgeGroup: {
+        teen: number,
+        adult: number,
+        old: number
+    }
+}
