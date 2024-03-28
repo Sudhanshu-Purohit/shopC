@@ -60,9 +60,11 @@
     }
 
     .coupon-form {
+      border: 2px solid red;
       @include grid(2fr 1fr, 2rem);
       max-width: 30rem;
       width: 100%;
+
       > input {
         padding: 1rem;
         border: 1px solid rgba(0, 0, 0, 0.359);

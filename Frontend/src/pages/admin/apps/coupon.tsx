@@ -1,5 +1,10 @@
 import { FormEvent, useEffect, useState } from "react";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
+import toast from "react-hot-toast";
+import { useCreateCoupounMutation } from "../../../redux/api/paymentAPI";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import { responseToast } from "../../../utils/features";
 
 const allLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const allNumbers = "1234567890";
@@ -8,23 +13,28 @@ const allSymbols = "!@#$%^&*()_+";
 const Coupon = () => {
   const [size, setSize] = useState<number>(8);
   const [prefix, setPrefix] = useState<string>("");
+  const [discount, setDiscount] = useState<string>("");
   const [includeNumbers, setIncludeNumbers] = useState<boolean>(false);
   const [includeCharacters, setIncludeCharacters] = useState<boolean>(false);
   const [includeSymbols, setIncludeSymbols] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
-
   const [coupon, setCoupon] = useState<string>("");
+
+  const [ createCoupoun ] = useCreateCoupounMutation();
+  const { user } = useSelector((state: RootState) => (state.userReducer));
 
   const copyText = async (coupon: string) => {
     await window.navigator.clipboard.writeText(coupon);
     setIsCopied(true);
   };
 
-  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if(!discount) return toast.error("Please add discount");
+
     if (!includeNumbers && !includeCharacters && !includeSymbols)
-      return alert("Please Select One At Least");
+      return toast.error("Please select at least one checkbox");
 
     let result: string = prefix || "";
     const loopLength: number = size - result.length;
@@ -40,6 +50,13 @@ const Coupon = () => {
     }
 
     setCoupon(result);
+
+    const res = await createCoupoun({data: {
+      amount: Number(discount),
+      coupoun: coupon
+    }, userId: user?._id!})
+    
+    responseToast(res, null, '');
   };
 
   useEffect(() => {
@@ -53,6 +70,7 @@ const Coupon = () => {
         <h1>Coupon</h1>
         <section>
           <form className="coupon-form" onSubmit={submitHandler}>
+
             <input
               type="text"
               placeholder="Text to include"
@@ -68,6 +86,16 @@ const Coupon = () => {
               onChange={(e) => setSize(Number(e.target.value))}
               min={8}
               max={25}
+            />
+
+            <input
+              type="number"
+              placeholder="Discount"
+              value={discount}
+              onChange={(e) => {
+                if(Number(e.target.value) < 0) return;
+                setDiscount(e.target.value)
+              }}
             />
 
             <fieldset>

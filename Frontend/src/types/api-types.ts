@@ -64,6 +64,14 @@ export type DeleteUserQuery = {
     adminId: string;
 }
 
+export type CreateCoupounQuery = {
+    data: {
+        coupoun: string,
+        amount: number,
+    },
+    userId: string
+}
+
 export type SearchProductsQuery = {
     search: string;
     sort: string;

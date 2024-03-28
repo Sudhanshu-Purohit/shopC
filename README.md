@@ -1,7 +1,10 @@
 # Live link: will be added soon
 
 # Description:
-shopC is a dynamic eCommerce venture, meticulously crafted with React JS, TypeScript, Node.js, Express, and MongoDB. Explore essential features including robust authentication, real-time inventory management, and fully customizable dashboards tailored to your needs. Dive into a seamless shopping experience with ShopC, where secure transactions foster unparalleled customer engagement. With its sleek design, lightning-fast performance, and forward-thinking features.
+shopC is a dynamic eCommerce platform, meticulously crafted with React JS, SCSS, TypeScript, Node.js, Express, and MongoDB. It features essential functionalities such as robust authentication, real-time inventory management, fully customizable dashboards, order tracking, product management, and more.
+
+It offers a seamless and intuitive interface, simplifying the process of browsing and purchasing products for users.
+
 
 # Tech Stack:
 1) **React**: A JavaScript library for building user interfaces, providing a flexible and efficient component-based approach.
